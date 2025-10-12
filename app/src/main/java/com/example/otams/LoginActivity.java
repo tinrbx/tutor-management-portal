@@ -41,7 +41,6 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             firebaseSignIn(email, password); });
     }
-
     private boolean checkInputs(String email, String password) {
         boolean ok = true;
         if (email.isEmpty()) {
