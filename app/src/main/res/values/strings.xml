@@ -3,4 +3,7 @@
     <string name="reg_butt_text">Register Now!</string>
     <string name="login_butt_text">Login</string>
     <string name="welcome_box_text">Welcome to OTAMS</string>
+    <string name="registration_text">Registration</string>
+    <string name="student_option">Student</string>
+    <string name="tutor_option">Tutor</string>
 </resources>
