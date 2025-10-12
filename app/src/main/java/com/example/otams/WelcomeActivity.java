@@ -17,7 +17,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
         String role = getIntent().getStringExtra("ROLE");
         if (role == null || role.isEmpty()) role = "User";
-        welcomeText.setText("Welcome! You are logged in as " + role);
+        welcomeText.setText("Welcome, You're logged in as " + role + "!");
 
         logoutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
