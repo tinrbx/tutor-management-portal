@@ -18,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText emailText, passwordText;
-    private Button loginButton;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -33,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -41,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
 
         emailText = findViewById(R.id.emailID);
         passwordText = findViewById(R.id.passwordID);
-        loginButton = findViewById(R.id.buttonLogin);
+        Button loginButton = findViewById(R.id.buttonLogin);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
