@@ -25,7 +25,9 @@
         <activity android:name=".WelcomeActivity"/>
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity"/>
-        <activity android:name=".DashboardActivity"/>
+        <activity android:name=".TutorDashboardActivity"/>
+        <activity android:name=".StudentDashboardActivity"/>
+        <activity android:name=".AdminDashboardActivity"/>
 
 
     </application>
