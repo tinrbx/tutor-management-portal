@@ -2,11 +2,14 @@ package com.example.otams;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.Objects;
 
 // MainActivity is now an invisible "dispatcher" or "router".
 // It decides where the user should go when the app starts.
@@ -23,11 +26,28 @@ public class MainActivity extends AppCompatActivity {
         Intent intent;
 
         if (isLoggedIn) {
-            intent = new Intent(MainActivity.this, DashboardActivity.class);
+            DataManager.getData(MainActivity.this, new DataManager.DataCallback() {
+                @Override
+                public void onSuccess(DocumentSnapshot data) {
+                    String role = data.getString("role");
+
+                    if (Objects.equals(role, "Tutor")) {
+                        System.out.println("say u hate me");
+                        //intent = new Intent(MainActivity.this, TutorActivity.class);
+                    }
+
+                    //startActivity(intent);
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Toast.makeText(MainActivity.this, "", Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
             intent = new Intent(MainActivity.this, WelcomeActivity.class);
-        }
 
-        startActivity(intent);
+            startActivity(intent);
+        }
     }
 }

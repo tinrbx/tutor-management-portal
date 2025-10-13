@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ public class DataManager {
     }
 
     public interface DataCallback {
-        void onSuccess(Map<String, Object> user);
+        void onSuccess(DocumentSnapshot data);
         void onFailure(String errorMessage);
     }
 
@@ -35,7 +36,7 @@ public class DataManager {
 
         getDb().collection("users").document(uid).get()
                 .addOnSuccessListener(activity, doc -> {
-                    callback.onSuccess(doc.getData());
+                    callback.onSuccess(doc);
                 })
                 .addOnFailureListener(activity, doc -> {
                     callback.onFailure(null);
