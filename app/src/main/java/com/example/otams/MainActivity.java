@@ -29,14 +29,23 @@ public class MainActivity extends AppCompatActivity {
             DataManager.getData(MainActivity.this, new DataManager.DataCallback() {
                 @Override
                 public void onSuccess(DocumentSnapshot data) {
+
+                    Intent intent;
+
                     String role = data.getString("role");
 
                     if (Objects.equals(role, "Tutor")) {
-                        System.out.println("say u hate me");
-                        //intent = new Intent(MainActivity.this, TutorActivity.class);
+                        //System.out.println("say u hate me");
+                        intent = new Intent(MainActivity.this, TutorDashboardActivity.class);
+                    } else if (Objects.equals(role, "Student")) {
+                        intent = new Intent(MainActivity.this, StudentDashboardActivity.class);
+                    } else if (Objects.equals(role, "Admin")) {
+                        intent = new Intent(MainActivity.this, AdminDashboardActivity.class);
+                    } else {
+                        intent = new Intent(MainActivity.this, WelcomeActivity.class);
                     }
 
-                    //startActivity(intent);
+                    startActivity(intent);
                 }
 
                 @Override
