@@ -1,6 +1,5 @@
 package com.example.otams;
 
-import android.text.style.DrawableMarginSpan;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -24,7 +25,6 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private EditText firstName, lastName, email, phone, password;
     private RadioGroup radioGroup;
-    private Button registrationButton;
     private EditText program, highestLevelOfStudy, coursesToTeach;
 
 
@@ -34,7 +34,10 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         ImageButton backButton = findViewById(R.id.backButt);
-        RadioGroup radioGroup = findViewById(R.id.radioGroup);
+        radioGroup = findViewById(R.id.radioGroup);
+        program = findViewById(R.id.program);
+        highestLevelOfStudy = findViewById(R.id.highestLevelOfStudy);
+        coursesToTeach = findViewById(R.id.coursesToTeach);
         EditText program = findViewById(R.id.program);
         EditText highestLevelOfStudy = findViewById(R.id.highestLevelOfStudy);
         EditText coursesToTeach = findViewById(R.id.coursesToTeach);
@@ -43,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
         email = findViewById(R.id.editTextTextEmailAddress);
         phone = findViewById(R.id.editTextPhone);
         password = findViewById(R.id.editTextTextPassword);
-        registrationButton = findViewById(R.id.registrationButton);
+        Button registrationButton = findViewById(R.id.registrationButton);
 
 
 
@@ -83,55 +86,50 @@ public class RegisterActivity extends AppCompatActivity {
         registrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean verified = checkInputs(firstName.getText().toString(), lastName.getText().toString(), email.getText().toString(), phone.getText().toString(), password.getText().toString());
                 registerUser();
-                if(verified) {
-                    Intent intent = new Intent(RegisterActivity.this, DashboardActivity.class);
-                    startActivity(intent);
-                }else{
-                    return;
                 }
-            }
-        });
+            });
+        }
 
-
-    }
-
-
-    private boolean checkInputs(String firstName, String lastName, String email, String phone, String password){
+    private boolean checkInputs(String firstName, String lastName, String email, String phone, String password) {
         boolean ok = true;
-        if(firstName.isEmpty()){
+        if (firstName.isEmpty()) {
             this.firstName.setError("First name required!");
             ok = false;
         }
-        if(lastName.isEmpty()) {
+        if (lastName.isEmpty()) {
             this.lastName.setError("Last name required!");
             ok = false;
         }
-        if(email.isEmpty()){
+        if (email.isEmpty()) {
             this.email.setError("Email required!");
             ok = false;
-
-        }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             this.email.setError("Invalid email!");
             ok = false;
         }
-        if(phone.isEmpty()){
+        if (phone.isEmpty()) {
             this.phone.setError("Phone required!");
             ok = false;
-        }else if(phone.length() != 10){
+        } else if (phone.length() != 10) {
             this.phone.setError("Phone number must be 10 digits!");
             ok = false;
         }
-        if(password.isEmpty()){
+        if (password.isEmpty()) {
             this.password.setError("Password required!");
             ok = false;
-        }else if(password.length() < 8 || !password.matches(".*[^a-zA-Z0-9 ].*")|| !password.matches(".*[0-9].*")){
+        } else if (password.length() < 8 || !password.matches(".*[^a-zA-Z0-9 ].*") || !password.matches(".*[0-9].*")) {
             this.password.setError("Password must be at least 8 characters long and contain at least one special character and one number!");
+            ok = false;
         }
-
+        // FIX: Check the radioGroup
+        if (radioGroup.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please select a role", Toast.LENGTH_SHORT).show();
+            ok = false;
+        }
         return ok;
     }
+
     private void registerUser() {
         String userFirstName = firstName.getText().toString().trim();
         String userLastName = lastName.getText().toString().trim();
@@ -139,25 +137,52 @@ public class RegisterActivity extends AppCompatActivity {
         String userPhone = phone.getText().toString().trim();
         String userPassword = password.getText().toString().trim();
 
-        if(!checkInputs(userFirstName, userLastName, userEmail, userPhone, userPassword)){
+        if (!checkInputs(userFirstName, userLastName, userEmail, userPhone, userPassword)) {
             return;
-        }else{
-            if(this.radioGroup.getCheckedRadioButtonId() == R.id.Student){
-                String uid = this.auth.getCurrentUser().getUid();
-                String role = this.radioGroup.getCheckedRadioButtonId() == R.id.Student ? "Student" : "Tutor";
-                String program = this.program.getText().toString().trim();
-                System.out.println(uid + role + program);
-            }else {
-                this.auth.createUserWithEmailAndPassword(userEmail, userPassword);
-                String uid = this.auth.getCurrentUser().getUid();
-                String role = this.radioGroup.getCheckedRadioButtonId() == R.id.Student ? "Student" : "Tutor";
-                String program = this.program.getText().toString().trim();
-                String highestLevelOfStudy = this.highestLevelOfStudy.getText().toString().trim();
-                String coursesToTeach = this.coursesToTeach.getText().toString().trim();
-                System.out.println(uid + role + highestLevelOfStudy + coursesToTeach);
-            }
         }
 
+        auth.createUserWithEmailAndPassword(userEmail, userPassword)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        assert auth.getCurrentUser() != null;
+                        String uid = auth.getCurrentUser().getUid();
+                        String role = (radioGroup.getCheckedRadioButtonId() == R.id.Student) ? "Student" : "Tutor";
+
+                        java.util.Map<String, Object> user = new java.util.HashMap<>();
+                        user.put("firstName", userFirstName);
+                        user.put("lastName", userLastName);
+                        user.put("email", userEmail);
+                        user.put("phone", userPhone);
+                        user.put("role", role);
+
+                        if (role.equals("Student")) {
+                            user.put("program", program.getText().toString().trim());
+                        } else {
+                            user.put("highestLevelOfStudy", highestLevelOfStudy.getText().toString().trim());
+                            user.put("coursesToTeach", coursesToTeach.getText().toString().trim());
+                        }
+
+                        db.collection("users").document(uid).set(user)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(RegisterActivity.this, DashboardActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(RegisterActivity.this, "Error saving user data: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                });
+
+                    } else {
+                        Toast.makeText(RegisterActivity.this, "Registration Failed: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
+
 }
+
+
+
+
