@@ -156,6 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
                 data.put("phone", userPhone);
                 data.put("password", userPassword);
                 data.put("role", role);
+                data.put("isPending", true);
 
                 if (role.equals("Student")) {
                     data.put("program", program.getText().toString().trim());
@@ -169,12 +170,12 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot data) {
                         Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "Please wait for your request to be reviewed by an administrator.", Toast.LENGTH_LONG).show();
 
-                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                        startActivity(intent);
-                        finish();
+//                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                        startActivity(intent);
+//                        finish();
                     }
 
                     @Override

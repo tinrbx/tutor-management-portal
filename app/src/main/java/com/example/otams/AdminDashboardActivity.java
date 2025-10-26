@@ -2,8 +2,17 @@ package com.example.otams;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -12,6 +21,24 @@ public class AdminDashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admindashboard);
 
+        // Default Vars
+//        ScrollView deniedList = findViewById(R.id.deniedList);
+//        ScrollView approvedList = findViewById(R.id.approvedList);
+
+        // Current List
+        DataManager.getDataOfType(AdminDashboardActivity.this, "isPending", true, new DataManager.QueryCallback() {
+            @Override
+            public void onSuccess(QuerySnapshot data) {
+                updateCurrentList(data);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(AdminDashboardActivity.this, "Error while trying to load requests", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Logout
         Button logoutButton = findViewById(R.id.logoutButton);
 
         logoutButton.setOnClickListener(v -> {
@@ -23,4 +50,26 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
     }
 
+    protected void updateCurrentList(QuerySnapshot data) {
+        // Default Vars
+        LinearLayout currentList = findViewById(R.id.currentListContainer);
+        LayoutInflater inflater = LayoutInflater.from(AdminDashboardActivity.this);
+
+        // Clear any old templates
+        currentList.removeAllViews();
+
+        // Add in all the templates
+        for (QueryDocumentSnapshot document : data) {
+            View requestRow = inflater.inflate(R.layout.current_request_row, currentList, false);
+            TextView textViewName = requestRow.findViewById(R.id.row_request_text);
+            Button approveBtn = requestRow.findViewById(R.id.row_approve_button);
+            Button denyBtn = requestRow.findViewById(R.id.row_deny_button);
+
+            String firstName = document.getString("firstName");
+            String lastName = document.getString("lastName");
+
+            textViewName.setText(firstName + " " + lastName);
+            currentList.addView(requestRow);
+        }
+    }
 }
