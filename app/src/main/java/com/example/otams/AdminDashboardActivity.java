@@ -93,6 +93,24 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     }
                 });
             });
+
+            approveBtn.setOnClickListener(v -> {
+                DataManager.updateData(AdminDashboardActivity.this, document.getId(), new HashMap<String, Object>() {{
+                    put("isPending", false);
+                    put("isDenied", true);
+                    put("isAccepted", false);
+                }}, new DataManager.DataCallback() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot data) {
+                        Toast.makeText(AdminDashboardActivity.this, "Request denied", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Toast.makeText(AdminDashboardActivity.this, "Error while trying to approve request: " + errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                });
+            });
         }
     }
 }
