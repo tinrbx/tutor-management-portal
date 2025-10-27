@@ -1,6 +1,7 @@
 package com.example.otams;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,8 +26,10 @@ public class PendingRequestActivity extends AppCompatActivity {
 
                 if (isDenied) {
                     statusText.setText("Denied");
+                    statusText.setTextColor(Color.parseColor("#9c1c30"));
                 } else {
                     statusText.setText("Pending");
+                    statusText.setTextColor(Color.parseColor("#67796c"));
                 }
             }
 
