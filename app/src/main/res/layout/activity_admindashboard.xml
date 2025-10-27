@@ -6,140 +6,6 @@
     android:layout_height="match_parent"
     android:background="#908681">
 
-    <ScrollView
-        android:id="@+id/deniedList"
-        android:layout_width="411dp"
-        android:layout_height="393dp"
-        android:scrollbarStyle="outsideInset"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout5">
-
-        <LinearLayout
-            android:id="@+id/deniedListContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:background="#00857974"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="John's request for new laptop"
-                    android:textColor="#651d32"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#05444542"
-                    android:text="Approve"
-                    android:textColor="#651d32"
-                    app:cornerRadius="50px"
-                    app:strokeColor="#651d32"
-                    app:strokeWidth="2px" />
-
-                <Button
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#05444542"
-                    android:text="Deny"
-                    android:textColor="#651d32"
-                    app:strokeColor="#651d32"
-                    app:strokeWidth="2px" />
-            </LinearLayout>
-
-        </LinearLayout>
-    </ScrollView>
-
-    <ScrollView
-        android:id="@+id/currentList"
-        android:layout_width="411dp"
-        android:layout_height="393dp"
-        android:scrollbarStyle="outsideInset"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout5">
-
-        <LinearLayout
-            android:id="@+id/currentListContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"/>
-    </ScrollView>
-
-    <ScrollView
-        android:id="@+id/approvedList"
-        android:layout_width="411dp"
-        android:layout_height="393dp"
-        android:scrollbarStyle="outsideInset"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout5">
-
-        <LinearLayout
-            android:id="@+id/approvedListContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:background="#00857974"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="John's request for new laptop"
-                    android:textColor="#651d32"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/approve_button"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#05444542"
-                    android:text="Approve"
-                    android:textColor="#651d32"
-                    app:cornerRadius="50px"
-                    app:strokeColor="#651d32"
-                    app:strokeWidth="2px" />
-
-                <Button
-                    android:id="@+id/deny_button"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#05444542"
-                    android:text="Deny"
-                    android:textColor="#651d32"
-                    app:strokeColor="#651d32"
-                    app:strokeWidth="2px" />
-            </LinearLayout>
-
-        </LinearLayout>
-    </ScrollView>
-
     <TextView
         android:id="@+id/textView3"
         android:layout_width="273dp"
@@ -171,7 +37,7 @@
         app:layout_constraintVertical_bias="0.966" />
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout5"
+        android:id="@+id/listSelection"
         android:layout_width="412dp"
         android:layout_height="36dp"
         android:layout_marginTop="8dp"
@@ -184,20 +50,75 @@
         tools:layout_editor_absoluteX="0dp">
 
         <com.google.android.material.tabs.TabItem
+            android:id="@+id/currentTab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fadeScrollbars="false"
             android:text="Current" />
 
         <com.google.android.material.tabs.TabItem
+            android:id="@+id/deniedTab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Denied" />
 
         <com.google.android.material.tabs.TabItem
+            android:id="@+id/approvedTab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Approved" />
     </com.google.android.material.tabs.TabLayout>
+
+    <ScrollView
+        android:id="@+id/deniedList"
+        android:layout_width="411dp"
+        android:layout_height="393dp"
+        android:scrollbarStyle="outsideInset"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listSelection">
+
+        <LinearLayout
+            android:id="@+id/deniedListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="invisible" />
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/currentList"
+        android:layout_width="411dp"
+        android:layout_height="393dp"
+        android:scrollbarStyle="outsideInset"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listSelection">
+
+        <LinearLayout
+            android:id="@+id/currentListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="invisible" />
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/approvedList"
+        android:layout_width="411dp"
+        android:layout_height="393dp"
+        android:scrollbarStyle="outsideInset"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listSelection">
+
+        <LinearLayout
+            android:id="@+id/approvedListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
