@@ -107,7 +107,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        Toast.makeText(AdminDashboardActivity.this, "Error while trying to approve request: " + errorMessage, Toast.LENGTH_LONG).show();
+                        Toast.makeText(AdminDashboardActivity.this, "Error while trying to deny request: " + errorMessage, Toast.LENGTH_LONG).show();
                     }
                 });
             });
