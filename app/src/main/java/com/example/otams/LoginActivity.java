@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                 if (Objects.equals(data.getBoolean("isDenied"), true)) {
                                     Toast.makeText(LoginActivity.this, "Your request has been denied by the administrator", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(LoginActivity.this, "Contact us at 613-415-5158 for more information", Toast.LENGTH_LONG).show();
                                 } else {
                                     Toast.makeText(LoginActivity.this, "Your request has not been reviewed yet", Toast.LENGTH_LONG).show();
                                 }

@@ -109,7 +109,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         Button closeButton = dialog.findViewById(R.id.popup_close_button);
         TextView phoneText = dialog.findViewById(R.id.popup_phone);
         TextView programText = dialog.findViewById(R.id.popup_program);
-
+        TextView highestLevelOfStudyText = dialog.findViewById(R.id.popup_highestLevelOfStudy);
+        TextView coursesToTeachText = dialog.findViewById(R.id.popup_coursesToTeach);
 
         String firstName = document.getString("firstName");
         String lastName = document.getString("lastName");
@@ -117,12 +118,23 @@ public class AdminDashboardActivity extends AppCompatActivity {
         String role = document.getString("role");
         String phone = document.getString("phone");
         String program = document.getString("program");
+        String highestLevelOfStudy = document.getString("highestLevelOfStudy");
+        String coursesToTeach = document.getString("coursesToTeach");
+
+        if (role != null && role.equals("Tutor")) {
+            programText.setVisibility(View.GONE);
+        } else {
+            highestLevelOfStudyText.setVisibility(View.GONE);
+            coursesToTeachText.setVisibility(View.GONE);
+        }
 
         phoneText.setText("Phone: " + phone);
         programText.setText("Program: " + program);
         nameText.setText(firstName + " " + lastName);
         emailText.setText("Email: " + email);
         roleText.setText("Role: " + role);
+        highestLevelOfStudyText.setText("Highest Level of Study: " + highestLevelOfStudy);
+        coursesToTeachText.setText("Courses: " + coursesToTeach);
 
         closeButton.setOnClickListener(v -> dialog.dismiss());
 
@@ -154,7 +166,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     textViewName.setOnClickListener(v -> showUserInfoDialog(document));
 
                     approveBtn.setOnClickListener(v -> {
-                        Toast.makeText(AdminDashboardActivity.this, "click test", Toast.LENGTH_LONG).show();
                         DataManager.updateData(AdminDashboardActivity.this, document.getId(), new HashMap<String, Object>() {{
                             put("isPending", false);
                             put("isDenied", false); // just in case it was denied before
@@ -229,7 +240,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     String lastName = document.getString("lastName");
 
                     textViewName.setText(firstName + " " + lastName);
-                    approveBtn.bringToFront();
+                    textViewName.setOnClickListener(v -> showUserInfoDialog(document));
 
                     approveBtn.setOnClickListener(v -> {
                         DataManager.updateData(AdminDashboardActivity.this, document.getId(), new HashMap<String, Object>() {{
@@ -287,6 +298,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     String lastName = document.getString("lastName");
 
                     textViewName.setText(firstName + " " + lastName);
+                    textViewName.setOnClickListener(v -> showUserInfoDialog(document));
                     approvedList.addView(requestRow);
                 }
             }
