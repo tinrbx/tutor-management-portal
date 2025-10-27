@@ -32,9 +32,14 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent;
 
-                    String role = data.getString("role");
+                    String role = data != null ? data.getString("role") : null;
 
-                    if (Objects.equals(role, "Tutor")) {
+                    boolean isPending = data != null && Objects.equals(data.getBoolean("isPending"), true);
+                    boolean isDenied = data != null && Objects.equals(data.getBoolean("isDenied"), true);
+
+                    if (isPending || isDenied) {
+                        intent = new Intent(MainActivity.this, PendingRequestActivity.class);
+                    } else if (Objects.equals(role, "Tutor")) {
                         intent = new Intent(MainActivity.this, TutorDashboardActivity.class);
                     } else if (Objects.equals(role, "Student")) {
                         intent = new Intent(MainActivity.this, StudentDashboardActivity.class);
@@ -45,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     startActivity(intent);
+                    finish();
                 }
 
                 @Override
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             intent = new Intent(MainActivity.this, WelcomeActivity.class);
 
             startActivity(intent);
+            finish();
         }
     }
 }
