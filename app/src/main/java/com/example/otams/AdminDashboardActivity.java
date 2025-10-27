@@ -1,9 +1,11 @@
 package com.example.otams;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -96,6 +98,37 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
     }
 
+    private void showUserInfoDialog(QueryDocumentSnapshot document) {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.user_info_popup);
+
+        TextView nameText = dialog.findViewById(R.id.popup_name);
+        TextView emailText = dialog.findViewById(R.id.popup_email);
+        TextView roleText = dialog.findViewById(R.id.popup_role);
+        Button closeButton = dialog.findViewById(R.id.popup_close_button);
+        TextView phoneText = dialog.findViewById(R.id.popup_phone);
+        TextView programText = dialog.findViewById(R.id.popup_program);
+
+
+        String firstName = document.getString("firstName");
+        String lastName = document.getString("lastName");
+        String email = document.getString("email");
+        String role = document.getString("role");
+        String phone = document.getString("phone");
+        String program = document.getString("program");
+
+        phoneText.setText("Phone: " + phone);
+        programText.setText("Program: " + program);
+        nameText.setText(firstName + " " + lastName);
+        emailText.setText("Email: " + email);
+        roleText.setText("Role: " + role);
+
+        closeButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
     protected void updateCurrentList() {
         DataManager.getDataOfType(AdminDashboardActivity.this, "isPending", true, new DataManager.QueryCallback() {
             @Override
@@ -118,6 +151,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     String lastName = document.getString("lastName");
 
                     textViewName.setText(firstName + " " + lastName);
+                    textViewName.setOnClickListener(v -> showUserInfoDialog(document));
 
                     approveBtn.setOnClickListener(v -> {
                         Toast.makeText(AdminDashboardActivity.this, "click test", Toast.LENGTH_LONG).show();
