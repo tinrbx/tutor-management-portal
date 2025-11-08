@@ -29,6 +29,8 @@
         <activity android:name=".StudentDashboardActivity"/>
         <activity android:name=".AdminDashboardActivity"/>
         <activity android:name=".PendingRequestActivity"/>
+        <activity android:name=".TimeslotActivity"/>"/>
+        <activity android:name=".TutorDashboardActivity"/>
 
 
     </application>
