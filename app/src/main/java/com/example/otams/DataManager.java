@@ -31,7 +31,7 @@ public class DataManager {
         void onFailure(String errorMessage);
     }
 
-    public interface updateCallback{
+    public interface UpdateCallback {
         void onSuccess();
         void onFailure(String errorMessage);
     }
@@ -67,7 +67,7 @@ public class DataManager {
                 });
     }
 
-    public static void createData(Activity activity, HashMap<String, Object> data, DataCallback callback) {
+    public static void createData(Activity activity, String collectionName, HashMap<String, Object> data, DataCallback callback) {
         // Retrieve the current user
         FirebaseUser currentUser = AuthManager.getCurrentUser();
 
@@ -80,29 +80,17 @@ public class DataManager {
         // Create the user's data
         String uid = currentUser.getUid();
 
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(tokenTask -> {
-                    if (tokenTask.isSuccessful() && tokenTask.getResult() != null) {
-                        String fcmToken = tokenTask.getResult();
-                        data.put("fcmToken", fcmToken);
-
-                        getDb().collection("users").document(uid).set(data)
-                                .addOnSuccessListener(activity, nVoid -> {
-                                    callback.onSuccess(null);
-                                })
-                                .addOnFailureListener(e -> {
-                                    callback.onFailure(null);
-                                });
-
-                    }else{
-                        String error = tokenTask.getException() != null? tokenTask.getException().getMessage() : "Failed";
-                        callback.onFailure(error);
-                    }
+        getDb().collection(collectionName).document(uid).set(data)
+                .addOnSuccessListener(activity, nVoid -> {
+                    callback.onSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(null);
                 });
     }
 
-    public static void updateData(Activity activity, String docUid, HashMap<String, Object> data, DataCallback callback) {
-        getDb().collection("users").document(docUid).update(data)
+    public static void updateData(Activity activity, String collectionName, String docUid, HashMap<String, Object> data, DataCallback callback) {
+        getDb().collection(collectionName).document(docUid).update(data)
                 .addOnSuccessListener(activity, nVoid -> {
                     callback.onSuccess(null);
                 })
@@ -111,65 +99,13 @@ public class DataManager {
                 });
     }
 
-    public static void createAvailabilitySlot(Activity activity, HashMap<String, Object> data, DataCallback callback) {
-        getDb().collection("availabilitySlots").add(data)
-                .addOnSuccessListener(activity, docRef -> {
-                    callback.onSuccess(null);
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e.getMessage());
-                });
-    }
-
-    public static void getSlotsOfType(Activity activity, String key, Object value, QueryCallback callback) {
-        // Retrieve the data where the key = value in the new collection
-        getDb().collection("availabilitySlots").whereEqualTo(key, value).get()
-                .addOnSuccessListener(activity, callback::onSuccess)
-                .addOnFailureListener(activity, err -> {
-                    // Optionally remove Toast if you want silent failure, but helpful for debugging
-                    Toast.makeText(activity, err.getMessage(), Toast.LENGTH_LONG).show();
-                    callback.onFailure(err.getMessage());
-                });
-    }
-
-    public static void deleteAvailabilitySlot(Activity activity, String docUid, DataCallback callback) {
-        getDb().collection("availabilitySlots").document(docUid).delete()
+    public static void deleteData(Activity activity, String collectionName, String docUid, UpdateCallback callback) {
+        getDb().collection(collectionName).document(docUid).delete()
                 .addOnSuccessListener(activity, nVoid -> {
-                    callback.onSuccess(null);
-                })
-                .addOnFailureListener(e -> {
-                callback.onFailure(e.getMessage());
-            });
-    }
-
-    public static void createSessionRequest(Activity activity, HashMap<String, Object> data, DataCallback callback) {
-        getDb().collection("sessionRequests").add(data)
-                .addOnSuccessListener(activity, docRef -> {
-                    callback.onSuccess(null);
+                    callback.onSuccess();
                 })
                 .addOnFailureListener(e -> {
                     callback.onFailure(e.getMessage());
                 });
     }
-
-    public static void getSessionRequestsOfType(Activity activity, String key, Object value, QueryCallback callback) {
-        getDb().collection("sessionRequests").whereEqualTo(key, value).get()
-                .addOnSuccessListener(activity, callback::onSuccess)
-                .addOnFailureListener(activity, err -> {
-                    callback.onFailure(err.getMessage());
-                });
-    }
-
-    public static void updateSessionRequest(Activity activity, String docUid, HashMap<String, Object> data, DataCallback callback) {
-        getDb().collection("sessionRequests").document(docUid).update(data)
-                .addOnSuccessListener(activity, nVoid -> {
-                    callback.onSuccess(null);
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e.getMessage());
-                });
-    }
-
-
-
 }

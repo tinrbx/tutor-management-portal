@@ -125,6 +125,14 @@ public class TutorDashboardActivity extends AppCompatActivity {
             pendingList.setVisibility(View.GONE);
 
             updateUpcomingList();
+        } else if (selectedTab.getPosition() == 1) {
+            // Update visibility
+            upcomingList.setVisibility(View.GONE);
+            pastList.setVisibility(View.VISIBLE);
+            timeslotsList.setVisibility(View.GONE);
+            pendingList.setVisibility(View.GONE);
+
+            updatePastList();
         }
     }
 
@@ -161,7 +169,19 @@ public class TutorDashboardActivity extends AppCompatActivity {
                     approvalStatus.setText(String.format("Approval: %s", Boolean.TRUE.equals(requiresApproval) ? "Manual" : "Auto"));
 
                     deleteBtn.setOnClickListener(v -> {
+                        DataManager.deleteData(TutorDashboardActivity.this, "slots", document.getId(), new DataManager.UpdateCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(TutorDashboardActivity.this, "Successfully deleted slot", Toast.LENGTH_LONG).show();
 
+                                updateUpcomingList();
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                Toast.makeText(TutorDashboardActivity.this, "Error while trying to delete slot: " + errorMessage, Toast.LENGTH_LONG).show();
+                            }
+                        });
                     });
 
                     currentList.addView(timeslot);
@@ -171,6 +191,51 @@ public class TutorDashboardActivity extends AppCompatActivity {
             @Override
             public void onFailure(String errorMessage) {
                 Toast.makeText(TutorDashboardActivity.this, "Error while trying to load upcoming slots", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    protected void updatePastList() {
+        DataManager.getDataOfType(TutorDashboardActivity.this, "slots", "tutorId", tutorId, new DataManager.QueryCallback() {
+            @Override
+            public void onSuccess(QuerySnapshot data) {
+                // Default Vars
+                LinearLayout currentList = findViewById(R.id.pastListContainer);
+                LayoutInflater inflater = LayoutInflater.from(TutorDashboardActivity.this);
+
+                // Clear any old templates
+                currentList.removeAllViews();
+
+                // Add in all the templates
+                for (QueryDocumentSnapshot document : data) {
+                    // Ensure it's an upcoming slot
+                    Timestamp startTime = document.getTimestamp("startTime");
+
+                    if (startTime == null || startTime.compareTo(Timestamp.now()) > 0) {
+                        return;
+                    }
+
+                    // Create the slot
+                    View timeslot = inflater.inflate(R.layout.timeslot_info, currentList, false);
+                    TextView timeslotDetails = timeslot.findViewById(R.id.timeslot_details);
+                    TextView approvalStatus = timeslot.findViewById(R.id.timeslot_approval_status);
+                    Button deleteBtn = timeslot.findViewById(R.id.row_delete_button);
+
+                    Timestamp endTime = document.getTimestamp("endTime");
+                    Boolean requiresApproval = document.getBoolean("requiresApproval");
+
+                    timeslotDetails.setText(formatSlotTime(startTime, endTime));
+                    approvalStatus.setText(String.format("Approval: %s", Boolean.TRUE.equals(requiresApproval) ? "Manual" : "Auto"));
+
+                    deleteBtn.setVisibility(View.GONE);
+
+                    currentList.addView(timeslot);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(TutorDashboardActivity.this, "Error while trying to load past slots", Toast.LENGTH_LONG).show();
             }
         });
     }
