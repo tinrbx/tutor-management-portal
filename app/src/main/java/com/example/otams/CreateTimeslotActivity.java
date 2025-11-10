@@ -118,7 +118,7 @@ public class CreateTimeslotActivity extends AppCompatActivity {
                 Toast.makeText(this, "End time must be after start time.", Toast.LENGTH_SHORT).show();
                 return; // Stop the function
             }else if ((endTimeMillis- startTimeMillis) % 1800000 != 0){
-                Toast.makeText(this, "End time must be 30 minutes after start time.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Time slot must be a multiple of 30 minutes.", Toast.LENGTH_SHORT).show();
                 return;
 
             }
