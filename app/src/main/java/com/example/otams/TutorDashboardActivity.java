@@ -117,23 +117,39 @@ public class TutorDashboardActivity extends AppCompatActivity {
         ScrollView timeslotsList = findViewById(R.id.timeslotsList);
         ScrollView pendingList = findViewById(R.id.pendingRequestsList);
 
-        if (selectedTab.getPosition() == 0) {
+        Button createNewTimeSlot = findViewById(R.id.createTimeslotButton);
+
+        if (selectedTab.getPosition() == 0) { //Upcoming
             // Update visibility
             upcomingList.setVisibility(View.VISIBLE);
             pastList.setVisibility(View.GONE);
             timeslotsList.setVisibility(View.GONE);
             pendingList.setVisibility(View.GONE);
+            createNewTimeSlot.setVisibility(View.GONE);
+
 
             updateUpcomingList();
-        } else if (selectedTab.getPosition() == 1) {
+        } else if (selectedTab.getPosition() == 1) { // Past
             // Update visibility
             upcomingList.setVisibility(View.GONE);
             pastList.setVisibility(View.VISIBLE);
             timeslotsList.setVisibility(View.GONE);
             pendingList.setVisibility(View.GONE);
+            createNewTimeSlot.setVisibility(View.GONE);
+
 
             updatePastList();
+        } else if (selectedTab.getPosition() == 2) { // Timeslots
+            // Update visibility
+            upcomingList.setVisibility(View.GONE);
+            pastList.setVisibility(View.GONE);
+            timeslotsList.setVisibility(View.VISIBLE);
+            pendingList.setVisibility(View.GONE);
+            createNewTimeSlot.setVisibility(View.VISIBLE);
+
+            updateTimeslotsList();
         }
+
     }
 
     protected void updateUpcomingList() {
@@ -237,6 +253,24 @@ public class TutorDashboardActivity extends AppCompatActivity {
             public void onFailure(String errorMessage) {
                 Toast.makeText(TutorDashboardActivity.this, "Error while trying to load past slots", Toast.LENGTH_LONG).show();
             }
+        });
+    }
+
+    protected void updateTimeslotsList() {
+        DataManager.getDataOfType(TutorDashboardActivity.this, "timeslots", "tutorId", tutorId, new DataManager.QueryCallback() {
+            @Override
+            public void onSuccess(QuerySnapshot data) {
+                // Default Vars
+                LinearLayout currentList = findViewById(R.id.timeslotsListContainer);
+                LayoutInflater inflater = LayoutInflater.from(TutorDashboardActivity.this);
+
+                currentList.removeAllViews();
+
+            }
+            public void onFailure(String errorMessage) {
+                Toast.makeText(TutorDashboardActivity.this, "Error while trying to load timeslots", Toast.LENGTH_LONG).show();
+            }
+
         });
     }
 }
