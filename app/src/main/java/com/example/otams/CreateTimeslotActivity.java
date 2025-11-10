@@ -115,7 +115,7 @@ public class CreateTimeslotActivity extends AppCompatActivity {
 
         createSlotButton.setOnClickListener(v -> {
 
-
+            long currentTimeMillis = System.currentTimeMillis();
             long startTimeMillis = startDateTime.getTimeInMillis();
             long endTimeMillis = endDateTime.getTimeInMillis();
 
@@ -135,6 +135,9 @@ public class CreateTimeslotActivity extends AppCompatActivity {
             } else if (startMinute % 30 != 0 || endMinute % 30  != 0){
                 Toast.makeText(this, "Time slot must be at 30 minute increments.", Toast.LENGTH_SHORT).show();
                 return;
+            } else if (startTimeMillis < currentTimeMillis) {
+                Toast.makeText(this, "Time cannot be in the past.", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             DataManager.getData(CreateTimeslotActivity.this, new DataManager.DataCallback() {
@@ -148,10 +151,11 @@ public class CreateTimeslotActivity extends AppCompatActivity {
                                 Timestamp endTime = document.getTimestamp("endTime");
 
                                 if (startTime != null && endTime != null) {
+                                    boolean isSameDate = startDateTime.get(Calendar.DATE) == endDateTime.get(Calendar.DATE);
                                     boolean isBefore = endDateTime.getTime().compareTo(startTime.toDate()) <= 0;
                                     boolean isAfter = startDateTime.getTime().compareTo(endTime.toDate()) >= 0;
 
-                                    if (!isBefore && !isAfter) {
+                                    if (isSameDate && (!isBefore && !isAfter)) {
                                         Toast.makeText(CreateTimeslotActivity.this, "Date cannot overlap with another time slot", Toast.LENGTH_SHORT).show();
 
                                         return;
@@ -169,20 +173,20 @@ public class CreateTimeslotActivity extends AppCompatActivity {
                             newData.put("tutorId", data.getId());
                             newData.put("isPending", true);
 
-//                            DataManager.createData(CreateTimeslotActivity.this, "slots", true, newData, new DataManager.DataCallback() {
-//                                @Override
-//                                public void onSuccess(DocumentSnapshot data) {
-//                                    Toast.makeText(CreateTimeslotActivity.this, "Session Created!", Toast.LENGTH_LONG).show();
-//                                    Intent intent = new Intent(CreateTimeslotActivity.this, TutorDashboardActivity.class);
-//                                    startActivity(intent);
-//                                    finish();
-//                                }
-//
-//                                @Override
-//                                public void onFailure(String errorMessage) {
-//                                    Toast.makeText(CreateTimeslotActivity.this, "Error saving timeslot data: " + errorMessage, Toast.LENGTH_LONG).show();
-//                                }
-//                            });
+                            DataManager.createData(CreateTimeslotActivity.this, "slots", true, newData, new DataManager.DataCallback() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot data) {
+                                    Toast.makeText(CreateTimeslotActivity.this, "Session Created!", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(CreateTimeslotActivity.this, TutorDashboardActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    Toast.makeText(CreateTimeslotActivity.this, "Error saving timeslot data: " + errorMessage, Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
 
                         @Override
