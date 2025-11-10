@@ -2,6 +2,7 @@ package com.example.otams;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -11,8 +12,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class CreateTimeslotActivity extends AppCompatActivity {
@@ -114,25 +119,59 @@ public class CreateTimeslotActivity extends AppCompatActivity {
             long startTimeMillis = startDateTime.getTimeInMillis();
             long endTimeMillis = endDateTime.getTimeInMillis();
 
+            int startMinute = startDateTime.get(Calendar.MINUTE);
+            int endMinute = endDateTime.get(Calendar.MINUTE);
+
             if (endTimeMillis <= startTimeMillis) {
                 Toast.makeText(this, "End time must be after start time.", Toast.LENGTH_SHORT).show();
                 return; // Stop the function
-            }else if ((endTimeMillis- startTimeMillis) % 1800000 != 0){
-                Toast.makeText(this, "Time slot must be a multiple of 30 minutes.", Toast.LENGTH_SHORT).show();
+            } else if (startMinute % 30 != 0 || endMinute % 30  != 0){
+                Toast.makeText(this, "Time slot must be at 30 minute increments.", Toast.LENGTH_SHORT).show();
                 return;
-
             }
 
+            DataManager.getData(CreateTimeslotActivity.this, new DataManager.DataCallback() {
+                @Override
+                public void onSuccess(DocumentSnapshot data) {
+                    // Now create the data entry for the timeslot
+                    HashMap<String, Object> newData = new HashMap<>();
 
+                    newData.put("startTime", startDateTime.getTime());
+                    newData.put("endTime", endDateTime.getTime());
+                    newData.put("isAvailable", true);
+                    newData.put("requiresApproval", !isAutoApprove);
+                    newData.put("tutorId", data.getId());
+                    newData.put("isPending", true);
+
+                    DataManager.createData(CreateTimeslotActivity.this, "slots", true, newData, new DataManager.DataCallback() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot data) {
+                            Toast.makeText(CreateTimeslotActivity.this, "Yay", Toast.LENGTH_LONG).show();
+
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            Toast.makeText(CreateTimeslotActivity.this, "Error saving timeslot data: " + errorMessage, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    Toast.makeText(CreateTimeslotActivity.this, "Error getting tutor data: " + errorMessage, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            });
+
+            //PLACEHOLDER
             String approvalMethod = isAutoApprove ? "Auto-Approve" : "Manual Approval";
             String message = "Slot Created!\n" +
                     "Start: " + startDateTime.getTime() + "\n" +
                     "End: " + endDateTime.getTime() + "\n" +
                     "Approval: " + approvalMethod;
 
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-
-            finish();
+            //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         });
     }
 

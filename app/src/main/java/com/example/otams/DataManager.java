@@ -67,7 +67,7 @@ public class DataManager {
                 });
     }
 
-    public static void createData(Activity activity, String collectionName, HashMap<String, Object> data, DataCallback callback) {
+    public static void createData(Activity activity, String collectionName, Boolean generateUid, HashMap<String, Object> data, DataCallback callback) {
         // Retrieve the current user
         FirebaseUser currentUser = AuthManager.getCurrentUser();
 
@@ -80,12 +80,24 @@ public class DataManager {
         // Create the user's data
         String uid = currentUser.getUid();
 
+        if (generateUid) {
+            getDb().collection(collectionName).add(data)
+                    .addOnSuccessListener(activity, nVoid -> {
+                        callback.onSuccess(null);
+                    })
+                    .addOnFailureListener(e -> {
+                        callback.onFailure(e.getMessage());
+                    });
+
+            return;
+        }
+
         getDb().collection(collectionName).document(uid).set(data)
                 .addOnSuccessListener(activity, nVoid -> {
                     callback.onSuccess(null);
                 })
                 .addOnFailureListener(e -> {
-                    callback.onFailure(null);
+                    callback.onFailure(e.getMessage());
                 });
     }
 

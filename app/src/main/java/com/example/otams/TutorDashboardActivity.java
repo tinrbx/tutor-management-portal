@@ -181,7 +181,7 @@ public class TutorDashboardActivity extends AppCompatActivity {
                     Timestamp startTime = document.getTimestamp("startTime");
 
                     if (startTime == null || startTime.compareTo(Timestamp.now()) < 0) {
-                        return;
+                        continue;
                     }
 
                     // Create the slot
@@ -238,7 +238,7 @@ public class TutorDashboardActivity extends AppCompatActivity {
                     Timestamp startTime = document.getTimestamp("startTime");
 
                     if (startTime == null || startTime.compareTo(Timestamp.now()) > 0) {
-                        return;
+                        continue;
                     }
 
                     // Create the slot
@@ -267,15 +267,42 @@ public class TutorDashboardActivity extends AppCompatActivity {
     }
 
     protected void updateTimeslotsList() {
-        DataManager.getDataOfType(TutorDashboardActivity.this, "timeslots", "tutorId", tutorId, new DataManager.QueryCallback() {
+        DataManager.getDataOfType(TutorDashboardActivity.this, "slots", "tutorId", tutorId, new DataManager.QueryCallback() {
             @Override
             public void onSuccess(QuerySnapshot data) {
                 // Default Vars
                 LinearLayout currentList = findViewById(R.id.timeslotsListContainer);
-                LayoutInflater.from(TutorDashboardActivity.this);
+                LayoutInflater inflater = LayoutInflater.from(TutorDashboardActivity.this);
 
                 currentList.removeAllViews();
 
+                // Add in all the templates
+                for (QueryDocumentSnapshot document : data) {
+                    // Ensure it's an upcoming slot
+                    Timestamp startTime = document.getTimestamp("startTime");
+                    Boolean isAvailable = document.getBoolean("isAvailable");
+                    String bookedBy = document.getString("bookedBy");
+
+                    if (startTime == null || startTime.compareTo(Timestamp.now()) < 0 || !Boolean.FALSE.equals(isAvailable) || bookedBy == null) {
+                        return;
+                    }
+
+                    // Create the slot
+                    View timeslot = inflater.inflate(R.layout.timeslot_info, currentList, false);
+                    TextView timeslotDetails = timeslot.findViewById(R.id.timeslot_details);
+                    TextView approvalStatus = timeslot.findViewById(R.id.timeslot_approval_status);
+                    Button deleteBtn = timeslot.findViewById(R.id.row_delete_button);
+
+                    Timestamp endTime = document.getTimestamp("endTime");
+                    Boolean requiresApproval = document.getBoolean("requiresApproval");
+
+                    timeslotDetails.setText(formatSlotTime(startTime, endTime));
+                    approvalStatus.setText(String.format("Approval: %s", Boolean.TRUE.equals(requiresApproval) ? "Manual" : "Auto"));
+
+                    deleteBtn.setVisibility(View.GONE);
+
+                    currentList.addView(timeslot);
+                }
             }
             public void onFailure(String errorMessage) {
                 Toast.makeText(TutorDashboardActivity.this, "Error while trying to load timeslots", Toast.LENGTH_LONG).show();
