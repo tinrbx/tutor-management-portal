@@ -12,7 +12,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.w3c.dom.Document;
-
+//p
 import java.util.HashMap;
 
 public class DataManager {
@@ -52,8 +52,16 @@ public class DataManager {
 
         getDb().collection("users").document(uid).get()
                 .addOnSuccessListener(activity, callback::onSuccess)
-                .addOnFailureListener(activity, doc -> {
-                    callback.onFailure(null);
+                .addOnFailureListener(activity, err -> {
+                    callback.onFailure(err.getMessage());
+                });
+    }
+
+    public static void getUserData(Activity activity, String uid, DataCallback callback) {
+        getDb().collection("users").document(uid).get()
+                .addOnSuccessListener(activity, callback::onSuccess)
+                .addOnFailureListener(activity, err -> {
+                    callback.onFailure(err.getMessage());
                 });
     }
 
@@ -67,7 +75,7 @@ public class DataManager {
                 });
     }
 
-    public static void createData(Activity activity, String collectionName, HashMap<String, Object> data, DataCallback callback) {
+    public static void createData(Activity activity, String collectionName, Boolean generateUid, HashMap<String, Object> data, DataCallback callback) {
         // Retrieve the current user
         FirebaseUser currentUser = AuthManager.getCurrentUser();
 
@@ -80,12 +88,24 @@ public class DataManager {
         // Create the user's data
         String uid = currentUser.getUid();
 
+        if (generateUid) {
+            getDb().collection(collectionName).add(data)
+                    .addOnSuccessListener(activity, nVoid -> {
+                        callback.onSuccess(null);
+                    })
+                    .addOnFailureListener(e -> {
+                        callback.onFailure(e.getMessage());
+                    });
+
+            return;
+        }
+
         getDb().collection(collectionName).document(uid).set(data)
                 .addOnSuccessListener(activity, nVoid -> {
                     callback.onSuccess(null);
                 })
                 .addOnFailureListener(e -> {
-                    callback.onFailure(null);
+                    callback.onFailure(e.getMessage());
                 });
     }
 

@@ -183,7 +183,7 @@ public class RegisterActivity extends AppCompatActivity {
                             }
 
                             // Create it in the database (regardless of FCM output)
-                            DataManager.createData(RegisterActivity.this, "users", data, new DataManager.DataCallback() {
+                            DataManager.createData(RegisterActivity.this, "users", false, data, new DataManager.DataCallback() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot data) {
                                     Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
