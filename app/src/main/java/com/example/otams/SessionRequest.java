@@ -17,9 +17,9 @@ public class SessionRequest {
     public SessionRequest(){}
 
     public SessionRequest(String slotId, String tutorId, String studentId, String studentName) {
-        this.slotID = slotID;
-        this.tutorUID = tutorUID;
-        this.studentUID = studentUID;
+        this.slotID = slotId;
+        this.tutorUID = tutorId;
+        this.studentUID = studentId;
         this.studentName = studentName;
         this.bookingStatus = "pending";
         this.requestTimeStamp = new Date().getTime();
