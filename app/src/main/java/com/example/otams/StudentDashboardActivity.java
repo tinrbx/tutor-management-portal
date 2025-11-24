@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.media.session.MediaController;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -30,6 +31,7 @@ import org.w3c.dom.Document;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class StudentDashboardActivity extends AppCompatActivity {
 
@@ -107,6 +109,8 @@ public class StudentDashboardActivity extends AppCompatActivity {
         DataManager.getDataById(StudentDashboardActivity.this, "users", id, new DataManager.DataCallback() {
             @Override
             public void onSuccess(DocumentSnapshot data) {
+                @SuppressWarnings("unchecked")
+                List<String> usersVoted = (List<String>) data.get("usersVoted");
                 Double totalRating = data.getDouble("totalRating");
                 Double numRatings = data.getDouble("numRatings");
                 Number avgRating = totalRating != null && numRatings != null ? totalRating / numRatings : 0;
@@ -121,11 +125,21 @@ public class StudentDashboardActivity extends AppCompatActivity {
                     DataManager.updateData(StudentDashboardActivity.this, "users", id, new HashMap<>() {{
                         put("totalRating", totalRating != null ? totalRating + ratingValue : ratingValue);
                         put("numRatings", numRatings != null ? numRatings + 1 : 1);
+
+                        if (usersVoted != null) {
+                            usersVoted.add(AuthManager.getCurrentUser().getUid());
+
+                            put("usersVoted", usersVoted);
+                        } else {
+                            put("usersVoted", List.of(AuthManager.getCurrentUser().getUid()));
+                        }
                     }}, new DataManager.DataCallback() {
                         @Override
                         public void onSuccess(DocumentSnapshot data) {
                             dialog.dismiss();
                             Toast.makeText(StudentDashboardActivity.this, "Successfully Submitted Rating", Toast.LENGTH_SHORT).show();
+
+                            updatePreviousList();
                         }
 
                         @Override
@@ -360,6 +374,23 @@ public class StudentDashboardActivity extends AppCompatActivity {
                     rateBtn.setOnClickListener(v -> showRateDialog(document.getString("tutorId")));
 
                     currentList.addView(timeslot);
+
+                    DataManager.getDataById(StudentDashboardActivity.this, "users", document.getString("tutorId"), new DataManager.DataCallback() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot data) {
+                            @SuppressWarnings("unchecked")
+                            List<String> usersVoted = (List<String>) data.get("usersVoted");
+
+                            if (usersVoted != null && usersVoted.contains(currentUser.getUid())) {
+                                rateBtn.setVisibility(View.GONE);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+
+                        }
+                    });
                 }
             }
 
