@@ -285,39 +285,50 @@ public class StudentDashboardActivity extends AppCompatActivity {
 
                     Timestamp endTime = document.getTimestamp("endTime");
                     Boolean requiresApproval = document.getBoolean("requiresApproval");
+                    Boolean isPending = document.getBoolean("isPending");
+                    Boolean isDenied = document.getBoolean("isDenied");
 
                     timeslotDetails.setText(TutorDashboardActivity.formatSlotTime(startTime, endTime));
                     approvalStatus.setText(String.format("Approval: %s", Boolean.TRUE.equals(requiresApproval) ? "Manual" : "Auto"));
-                    cancelBtn.setText("Cancel");
 
-                    cancelBtn.setOnClickListener(v -> {
-                        // Make sure it's > 24h
-                        if (startTime.compareTo(Timestamp.now()) < (86_400 * 1_000)) {
-                            Toast.makeText(StudentDashboardActivity.this, "Cannot cancel with 24h or less to session", Toast.LENGTH_LONG).show();
+                    if (Boolean.TRUE.equals(isPending)) {
+                        cancelBtn.setText("Pending");
+                        cancelBtn.setEnabled(false);
+                    } else if (Boolean.TRUE.equals(isDenied)) {
+                        cancelBtn.setText("Denied");
+                        cancelBtn.setEnabled(false);
+                    } else {
+                        cancelBtn.setText("Cancel");
 
-                            return;
-                        }
+                        cancelBtn.setOnClickListener(v -> {
+                            // Make sure it's > 24h
+                            if (startTime.compareTo(Timestamp.now()) < (86_400 * 1_000)) {
+                                Toast.makeText(StudentDashboardActivity.this, "Cannot cancel with 24h or less to session", Toast.LENGTH_LONG).show();
 
-                        DataManager.updateData(StudentDashboardActivity.this, "slots", document.getId(), new HashMap<>() {{
-                            put("isAvailable", true);
-                            put("bookedBy", null);
-                            put("isApproved", false);
-                            put("isDenied", false);
-                            put("isPending", false);
-                        }}, new DataManager.DataCallback() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot data) {
-                                Toast.makeText(StudentDashboardActivity.this, "Successfully cancelled session", Toast.LENGTH_LONG).show();
-
-                                updateUpcomingList();
+                                return;
                             }
 
-                            @Override
-                            public void onFailure(String errorMessage) {
-                                Toast.makeText(StudentDashboardActivity .this, "Error while trying to cancel session: " + errorMessage, Toast.LENGTH_LONG).show();
-                            }
+                            DataManager.updateData(StudentDashboardActivity.this, "slots", document.getId(), new HashMap<>() {{
+                                put("isAvailable", true);
+                                put("bookedBy", null);
+                                put("isApproved", false);
+                                put("isDenied", false);
+                                put("isPending", false);
+                            }}, new DataManager.DataCallback() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot data) {
+                                    Toast.makeText(StudentDashboardActivity.this, "Successfully cancelled session", Toast.LENGTH_LONG).show();
+
+                                    updateUpcomingList();
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+                                    Toast.makeText(StudentDashboardActivity .this, "Error while trying to cancel session: " + errorMessage, Toast.LENGTH_LONG).show();
+                                }
+                            });
                         });
-                    });
+                    }
 
                     currentList.addView(timeslot);
                 }
