@@ -55,6 +55,7 @@ public class SessionRequestActivity extends AppCompatActivity {
                             {
                                 put("isApproved", true);
                                 put("isDenied", false);
+                                put("isPending", false);
                                 put("isAvailable", false);
                             }
                         }, new DataManager.DataCallback() {
