@@ -7,12 +7,13 @@
     android:background="#908681">
 
     <!-- Top Bar -->
+
     <ImageButton
         android:id="@+id/backButt"
         android:layout_width="@dimen/back_size"
         android:layout_height="@dimen/back_size"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="56dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/back_button"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +31,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/backButt"
+        app:layout_constraintBottom_toBottomOf="@+id/backButt"/>
 
     <!-- Date Picker Chain -->
     <Button
